@@ -25,10 +25,11 @@ module.exports = async function auth(req, res, next) {
     // ✅ ATTACH CORRECT DATA
     req.user = {
       id: user._id,
+       user_id: user._id,
       role: user.role,
       bankId: user.blood_bank_id   // 🔥 ALWAYS CORRECT
     };
-
+ 
     next();
 
   } catch (err) {

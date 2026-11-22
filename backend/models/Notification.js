@@ -14,6 +14,7 @@ const notificationSchema = new mongoose.Schema({
     type: String,
     enum: [
       "BLOOD_REQUEST",
+      "NEW_REQUEST",
       "DONOR_EMERGENCY",
       "ELIGIBILITY_REMINDER",
       "SYSTEM"
@@ -23,10 +24,10 @@ const notificationSchema = new mongoose.Schema({
   reference_id: String,
 
   channel: {
-    type: String,
-    enum: ["DASHBOARD", "WHATSAPP", "CALL"],
-    default: "DASHBOARD"
-  },
+  type: String,
+  enum: ["DASHBOARD", "SMS", "WHATSAPP", "CALL"],
+  default: "DASHBOARD"
+},
 
   priority: {
     type: String,

@@ -21,6 +21,8 @@ export default function CreateUser() {
     last_donation_date: "",
 
     // medical screening
+    hemoglobin: "",
+
     has_diabetes: "NO",
     has_bp: "NO",
     heart_disease: "NO",
@@ -299,7 +301,21 @@ export default function CreateUser() {
                 className="w-full border rounded px-3 py-2"
               />
             </div>
+          <div>
+  <label className="text-sm font-medium">
+    Hemoglobin (g/dL)
+  </label>
 
+  <input
+    type="number"
+    step="0.1"
+    name="hemoglobin"
+    value={form.hemoglobin}
+    onChange={handleChange}
+    className="w-full border rounded px-3 py-2"
+    placeholder="e.g. 13.5"
+  />
+</div>
           </div>
 
 

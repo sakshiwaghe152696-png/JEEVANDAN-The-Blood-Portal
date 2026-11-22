@@ -6,8 +6,9 @@ const controller = require("../controllers/authController"); // ✅ THIS WAS MIS
 
 // 🔐 Login
 router.post("/login", controller.login);
+// console.log("getMyProfile:", controller.getMyProfile);
 
-// 🔐 Get logged-in user profile
-router.get("/me", auth, controller.getMyProfile);
+// // 🔐 Get logged-in user profile
+// router.get("/me", auth, controller.getMyProfile);
 
 module.exports = router;

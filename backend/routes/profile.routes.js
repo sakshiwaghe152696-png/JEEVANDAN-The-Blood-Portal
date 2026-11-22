@@ -11,6 +11,7 @@ const profileController = require("../controllers/profile.controller");
 ================================ */
 router.get("/me", auth, profileController.getMyProfile);
 
+
 /* ===============================
    UPDATE PROFILE
    PUT /api/profile/me

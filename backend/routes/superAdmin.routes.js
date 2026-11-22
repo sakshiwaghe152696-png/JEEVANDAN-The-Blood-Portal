@@ -79,5 +79,13 @@ router.delete(
   controller.deleteBankAdmin
 );
 
+router.delete(
+  "/donors/:id",
+  auth,
+  requireSuperAdmin,
+  controller.deleteDonor
+);
+
+
 
 module.exports = router;

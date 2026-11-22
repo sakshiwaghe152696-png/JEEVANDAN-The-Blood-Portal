@@ -11,11 +11,8 @@ import {
 export default function Donors() {
   const [donors, setDonors] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState(null); // ✅ custom confirm
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
-  /* ===============================
-     FETCH DONORS
-  =============================== */
   const fetchDonors = async () => {
     try {
       setLoading(true);
@@ -32,37 +29,49 @@ export default function Donors() {
     fetchDonors();
   }, []);
 
-  /* ===============================
-     DELETE DONOR
-  =============================== */
+  const getAge = (dob) => {
+    if (!dob) return "—";
+    const birth = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+
+    return age;
+  };
+
   const confirmDelete = async () => {
     try {
-      await deleteDonor(deleteConfirm.user_id); // ✅ user_id now a string from backend
+      const id = deleteConfirm.user_id;
+
+      await deleteDonor(id);
+
+      setDonors((prev) => prev.filter((d) => d.user_id !== id));
+
       setDeleteConfirm(null);
-      fetchDonors();
+
     } catch (err) {
       console.error("Delete error:", err);
       alert("Failed to delete donor");
     }
   };
 
-  /* ===============================
-     TABLE DATA
-  =============================== */
   const tableData = donors.map((donor) => [
     donor.full_name || "—",
     donor.city || "—",
     donor.email || "—",
     donor.phone || "—",
-    donor.age || "—",
+    getAge(donor.date_of_birth),
     donor.gender || "—",
     donor.blood_group || "—",
 
-    // ACTIONS — edit removed since CreateUserModal doesn't support DONOR role
     <div key={donor.user_id} className="flex justify-end gap-3">
       <button
         onClick={() => setDeleteConfirm(donor)}
-        className="text-red-600 hover:text-red-800"
+        className="deleteBtn"
         title="Delete Donor"
       >
         <Trash2 size={18} />
@@ -71,49 +80,54 @@ export default function Donors() {
   ]);
 
   return (
-    <>
-      <h2 className="text-2xl font-bold mb-6">Donors</h2>
+    <div className="pageWrapper fadeIn">
+
+      <h2 className="title">Donors</h2>
 
       {loading ? (
-        <p className="text-gray-500">Loading donors...</p>
+        <p className="loadingText">Loading donors...</p>
       ) : (
-        <Table
-          columns={[
-            "Name",
-            "City",
-            "Email",
-            "Phone",
-            "Age",
-            "Gender",
-            "Blood Group",
-            "Actions",
-          ]}
-          data={tableData}
-        />
+        <div className="tableWrapper glass">
+          <Table
+            columns={[
+              "Name",
+              "City",
+              "Email",
+              "Phone",
+              "Age",
+              "Gender",
+              "Blood Group",
+              "Actions",
+            ]}
+            data={tableData}
+          />
+        </div>
       )}
 
-      {/* ✅ Custom delete confirmation — no window.confirm */}
       {deleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full">
-            <h3 className="text-lg font-bold text-gray-800 mb-2">Confirm Delete</h3>
-            <p className="text-sm text-gray-500 mb-6">
+        <div className="modalOverlay">
+          <div className="modal glass fadeScale">
+            <h3 className="modalTitle">Confirm Delete</h3>
+
+            <p className="modalText">
               Are you sure you want to delete{" "}
-              <span className="font-semibold text-gray-700">
-                {deleteConfirm.full_name}
+              <span className="highlight">
+                {deleteConfirm.profile?.full_name}
               </span>
               ?
             </p>
-            <div className="flex gap-3">
+
+            <div className="modalActions">
               <button
                 onClick={() => setDeleteConfirm(null)}
-                className="flex-1 py-2 rounded-xl border text-gray-600 hover:bg-gray-50"
+                className="cancelBtn"
               >
                 Cancel
               </button>
+
               <button
                 onClick={confirmDelete}
-                className="flex-1 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold"
+                className="confirmBtn"
               >
                 Delete
               </button>
@@ -121,6 +135,147 @@ export default function Donors() {
           </div>
         </div>
       )}
-    </>
+
+      {/* ===== STYLES ===== */}
+      <style>{`
+        .pageWrapper {
+          padding: 20px;
+          background: linear-gradient(135deg,#eef2ff,#f8fafc,#fdf2f8);
+          min-height: 100vh;
+        }
+
+        .title {
+          font-size: 26px;
+          font-weight: 700;
+          margin-bottom: 20px;
+          letter-spacing: 0.5px;
+        }
+
+        .loadingText {
+          color: #64748b;
+          font-weight: 500;
+        }
+
+        .glass {
+          background: rgba(255,255,255,0.6);
+          backdrop-filter: blur(18px);
+          border-radius: 16px;
+          border: 1px solid rgba(255,255,255,0.3);
+          box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+
+        .tableWrapper {
+          padding: 10px;
+          transition: 0.3s;
+        }
+
+        .tableWrapper:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+        }
+
+        /* DELETE BUTTON */
+        .deleteBtn {
+          color: #ef4444;
+          transition: all 0.3s ease;
+        }
+
+        .deleteBtn:hover {
+          color: #b91c1c;
+          transform: scale(1.2) rotate(5deg);
+        }
+
+        /* MODAL */
+        .modalOverlay {
+          position: fixed;
+          inset: 0;
+          z-index: 50;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(0,0,0,0.5);
+          backdrop-filter: blur(6px);
+        }
+
+        .modal {
+          padding: 25px;
+          max-width: 360px;
+          width: 100%;
+          border-radius: 20px;
+          text-align: center;
+        }
+
+        .modalTitle {
+          font-size: 20px;
+          font-weight: 700;
+          margin-bottom: 10px;
+        }
+
+        .modalText {
+          font-size: 14px;
+          color: #64748b;
+          margin-bottom: 20px;
+        }
+
+        .highlight {
+          color: #0f172a;
+          font-weight: 600;
+        }
+
+        .modalActions {
+          display: flex;
+          gap: 10px;
+        }
+
+        .cancelBtn {
+          flex: 1;
+          padding: 10px;
+          border-radius: 12px;
+          border: 1px solid #e2e8f0;
+          background: white;
+          transition: 0.3s;
+        }
+
+        .cancelBtn:hover {
+          background: #f8fafc;
+          transform: translateY(-2px);
+        }
+
+        .confirmBtn {
+          flex: 1;
+          padding: 10px;
+          border-radius: 12px;
+          background: linear-gradient(135deg,#ef4444,#dc2626);
+          color: white;
+          font-weight: 600;
+          transition: 0.3s;
+        }
+
+        .confirmBtn:hover {
+          transform: translateY(-2px) scale(1.03);
+          box-shadow: 0 10px 25px rgba(239,68,68,0.4);
+        }
+
+        /* ANIMATIONS */
+        .fadeIn {
+          animation: fadeIn 0.6s ease;
+        }
+
+        .fadeScale {
+          animation: scaleIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(15px);}
+          to { opacity: 1; transform: translateY(0);}
+        }
+
+        @keyframes scaleIn {
+          from { transform: scale(0.9); opacity: 0;}
+          to { transform: scale(1); opacity: 1;}
+        }
+      `}</style>
+
+    </div>
   );
 }

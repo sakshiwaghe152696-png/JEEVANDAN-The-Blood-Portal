@@ -33,4 +33,34 @@ router.get("/request/:id", auth, isDoctor, doctorController.getRequestById);
 router.get("/notifications", auth, isDoctor, doctorController.getNotifications);
 router.patch("/notifications/:id/read", auth, isDoctor, doctorController.markNotificationRead);
 
+router.get("/donors", auth, isDoctor, doctorController.getAllDonors);
+
+router.get("/best-donors", auth, isDoctor, doctorController.getBestDonors);
+
+router.post("/notify/:id", auth, isDoctor, doctorController.notifyDonor);
+
+
+router.get("/test-sms", async (req, res) => {
+  try {
+    const { sendSMS } = require("../services/notification.service");
+
+    await sendSMS(
+      "686000000000000000000000", // Temporary dummy user ID
+      "+917410781884",
+      "🩸 Jeevandan Test SMS - Twilio integration is working!"
+    );
+
+    res.json({
+      success: true,
+      message: "SMS sent successfully"
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+});
 module.exports = router;

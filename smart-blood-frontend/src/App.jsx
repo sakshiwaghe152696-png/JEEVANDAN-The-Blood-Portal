@@ -27,13 +27,21 @@ import DoctorNearbyBloodBanks from "./pages/doctor/DoctorNearbyBloodBanks";
 import BloodStockPage from "./pages/doctor/BloodStockPage";
 import RaiseRequestPage from "./pages/doctor/RaiseRequestPage";
 import CreateUser from "./pages/doctor/CreateUser";
+import DoctorDonors from "./pages/doctor/DonorsList";
+import BestDonors from "./pages/doctor/BestDonors";
+
+
+
 
 /* 🏥 Bank Admin */
 import BankAdminLayout from "./layouts/BankAdminLayout";
 import BankDashboard from "./pages/bankAdmin/Dashboard";
 import Requests from "./pages/bankadmin/Requests";
 import Inventory from "./pages/bankAdmin/Inventory";
+import Donation from "./pages/bankAdmin/Donation";
+/*User*/
 
+import Profile from "./pages/user/Profile";
 
 export default function App() {
   return (
@@ -79,6 +87,10 @@ export default function App() {
             <Route path="request-blood/:bankId" element={<RaiseRequestPage />} />
             <Route path="request/:id" element={<RequestDetails />} />
             <Route path="create-user" element={<CreateUser />} />
+            <Route path="donors" element={<DoctorDonors />} />
+            <Route path="best-donors" element={<BestDonors />} />
+            
+
           </Route>
 
           {/* 🏥 Bank Admin */}
@@ -93,8 +105,10 @@ export default function App() {
             {/* ✅ THIS WAS MISSING */}
             <Route index element={<BankDashboard />} />
             <Route path="requests" element={<Requests />} />
-            <Route path="/bank-admin/inventory" element={<Inventory />} />
+             <Route path="donations" element={<Donation />} />
+            <Route path="inventory" element={<Inventory />} />
           </Route>
+<Route path="/profile" element={<Profile />} />
 
         </Routes>
       </BrowserRouter>

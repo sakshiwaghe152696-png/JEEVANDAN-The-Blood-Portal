@@ -45,6 +45,10 @@ export default function Login() {
         role: roleToSend,
       });
 
+
+localStorage.setItem("token", res.data.token);
+
+
       // save auth
       login(res.data);
 
@@ -52,14 +56,16 @@ export default function Login() {
 
       // redirect
       if (role === "SUPER_ADMIN") {
-        navigate("/superadmin", { replace: true });
-      } else if (role === "BANK_ADMIN") {
-        navigate("/bank-admin", { replace: true });
-      } else if (role === "DOCTOR") {
-        navigate("/doctor", { replace: true });
-      } else {
-        navigate("/dashboard", { replace: true });
-      }
+  navigate("/superadmin", { replace: true });
+} else if (role === "BANK_ADMIN") {
+  navigate("/bank-admin", { replace: true });
+} else if (role === "DOCTOR") {
+  navigate("/doctor", { replace: true });
+} else if (role === "USER") {
+  navigate("/profile", { replace: true });
+} else {
+  navigate("/dashboard", { replace: true });
+}
 
     } catch (err) {
       setError(err.response?.data?.message || "Invalid credentials");

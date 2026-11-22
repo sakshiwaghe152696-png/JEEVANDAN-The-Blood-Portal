@@ -8,7 +8,17 @@ const profileSchema = new mongoose.Schema({
   longitude: Number,
   date_of_birth: Date,
   gender: String,
-  photo: String
+  photo: String, 
+
+  last_donation_date: {
+    type: Date,
+    default: null
+  },
+
+  medical_conditions: {
+    type: [String],
+    default: []
+  },
 });
 
 const userSchema = new mongoose.Schema({
@@ -23,7 +33,14 @@ const userSchema = new mongoose.Schema({
 
   city: String,
 
-  // ✅ Links a BANK_ADMIN user to their blood bank
+  // ✅ NEW FIELD (IMPORTANT 🔥)
+  availability_status: {
+    type: String,
+    enum: ["ACTIVE", "INACTIVE"],
+    default: "ACTIVE"
+  },
+
+  // ✅ Existing fields (unchanged)
   blood_bank_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "BloodBank",

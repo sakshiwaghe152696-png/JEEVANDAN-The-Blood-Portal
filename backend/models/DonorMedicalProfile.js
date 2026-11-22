@@ -4,7 +4,9 @@ const donorSchema = new mongoose.Schema({
 
   donor_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
+    unique: true,
+    required: true
   },
 
   blood_group: String,

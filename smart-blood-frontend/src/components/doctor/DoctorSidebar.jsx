@@ -1,9 +1,11 @@
 import { NavLink } from "react-router-dom";
+
 import {
   LayoutDashboard,
   Droplet,
   Hospital,
-  UserPlus
+  UserPlus,
+  Trophy 
 } from "lucide-react";
 
 export default function DoctorSidebar() {
@@ -65,7 +67,30 @@ export default function DoctorSidebar() {
           <span className="text-sm font-medium">
             Register Donor
           </span>
+          
         </NavLink>
+        {/* ✅ NEW: Total Donors */}
+<NavLink
+  to="/doctor/donors"
+  className={linkClass}
+>
+  <Droplet size={18} />
+  <span className="text-sm font-medium">
+    Total Donors
+  </span>
+</NavLink>
+
+{/* ✅ NEW: Find Donor */}
+{/* ✅ BEST DONOR */}
+<NavLink
+  to="/doctor/best-donors"
+  className={linkClass}
+>
+  <Trophy size={18} />
+  <span className="text-sm font-medium">
+    Best Donor
+  </span>
+</NavLink>
       </nav>
     </aside>
   );

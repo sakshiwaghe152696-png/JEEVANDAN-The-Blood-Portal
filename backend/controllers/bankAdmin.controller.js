@@ -79,6 +79,7 @@ exports.acceptRequest = async (req, res) => {
     const { id } = req.params;
     const bankId = req.user.bankId;
 
+    // ✅ STEP 1: FIND REQUEST
     const request = await BloodRequest.findOne({
       _id: id,
       blood_bank_id: bankId,
@@ -89,29 +90,53 @@ exports.acceptRequest = async (req, res) => {
     }
 
     if (request.status !== "PENDING") {
-      return res
-        .status(400)
-        .json({ message: "Request is no longer pending" });
+      return res.status(400).json({ message: "Already processed" });
     }
 
+    // ✅ STEP 2: ATOMIC STOCK UPDATE
+    const updatedStock = await BloodStock.findOneAndUpdate(
+      {
+        bank_id: bankId,
+        blood_group: request.blood_group,
+        component: request.component,
+        units: { $gte: request.units } // ensures enough stock
+      },
+      {
+        $inc: { units: -request.units }
+      },
+      { new: true }
+    );
+
+    if (!updatedStock) {
+      return res.status(400).json({
+        message: "Not enough stock available",
+      });
+    }
+
+    // ✅ STEP 3: UPDATE REQUEST
     request.status = "APPROVED";
     request.updated_at = new Date();
     await request.save();
+    // ✅ NOTIFY DOCTOR
+await Notification.create({
+  user_id: request.doctor_id,
+  title: "Blood Request Approved ✅",
+  message: `Your request for ${request.units} units of ${request.blood_group} (${request.component}) has been APPROVED.`,
+  type: "BLOOD_REQUEST",
+  reference_id: request._id.toString(),
+  priority: request.urgency === "Emergency" ? "CRITICAL" : "HIGH",
+  channel: "DASHBOARD",
+});
 
-    await Notification.create({
-      user_id: request.doctor_id,
-      title: "Blood Request Approved ✅",
-      message: `Your request for ${request.units} units of ${request.blood_group} (${request.component}) has been APPROVED. Please proceed to collect from the blood bank.`,
-      type: "BLOOD_REQUEST",
-      reference_id: request._id.toString(),
-      priority: request.urgency === "Emergency" ? "CRITICAL" : "HIGH",
-      channel: "DASHBOARD",
+    res.json({
+      message: "Request approved & stock updated",
+      request,
+      remaining_units: updatedStock.units
     });
 
-    res.json({ message: "Request approved successfully", request });
   } catch (err) {
     console.error("acceptRequest error:", err);
-    res.status(500).json({ message: "Failed to approve request" });
+    res.status(500).json({ message: "Error approving request" });
   }
 };
 
@@ -169,12 +194,12 @@ exports.rejectRequest = async (req, res) => {
 exports.getNotifications = async (req, res) => {
   try {
     const notifications = await Notification.find({
-      user_id: req.user.user_id,
+      user_id: req.user.id
     }).sort({ createdAt: -1 });
 
     res.json(notifications);
   } catch (err) {
-    console.error("getNotifications error:", err);
+    console.error("Notification error:", err);
     res.status(500).json({ message: "Failed to fetch notifications" });
   }
 };
@@ -223,3 +248,5 @@ exports.getProfile = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch profile" });
   }
 };
+
+

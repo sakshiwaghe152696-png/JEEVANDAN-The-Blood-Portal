@@ -102,6 +102,17 @@ export default function NotificationBell({ fetchFn, markReadFn }) {
                     <div className="flex-1">
                       <p className="text-sm font-semibold text-gray-800">{n.title}</p>
                       <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{n.message}</p>
+                      {n.type === "NEW_REQUEST" && (
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      window.location.href = `/bank-admin/requests`;
+    }}
+    className="mt-2 text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+  >
+    View Request
+  </button>
+)}
                       <p className="text-xs text-gray-400 mt-1">
                         {new Date(n.createdAt).toLocaleString()}
                       </p>

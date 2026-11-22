@@ -11,7 +11,7 @@ const bloodRequestSchema = new mongoose.Schema({
   blood_bank_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "BloodBank",
-    required: true
+    required: false
   },
 
   patient_name: {

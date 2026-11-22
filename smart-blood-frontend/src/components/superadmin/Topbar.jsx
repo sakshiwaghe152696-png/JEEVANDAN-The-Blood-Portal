@@ -6,17 +6,26 @@ export default function Topbar() {
   const [admin, setAdmin] = useState(null);
   const avatarRef = useRef(null);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await getMyProfile();
-        setAdmin(res.data);
-      } catch {
-        console.error("Failed to load profile");
-      }
-    };
-    fetchProfile();
-  }, []);
+ useEffect(() => {
+  const fetchProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      // ✅ IMPORTANT CHECK
+      if (!token) return;
+
+      const res = await getMyProfile();
+      setAdmin(res.data);
+    } catch (err) {
+      console.error("Failed to load profile", err);
+    }
+    
+  };
+
+  fetchProfile();
+}, []);
+
+
 
   // 🔒 Close dropdown on outside click
   useEffect(() => {
@@ -74,14 +83,14 @@ export default function Topbar() {
               from-red-500 to-red-700 flex items-center justify-center
               text-white text-lg font-bold"
             >
-              {admin.email[0].toUpperCase()}
+              {admin?.email?.[0]?.toUpperCase() || "A"}
             </div>
             <div>
               <p className="text-white font-semibold leading-tight">
                 Super Admin
               </p>
               <p className="text-xs text-gray-400 uppercase tracking-wide">
-                {admin.role.replace("_", " ")}
+                
               </p>
             </div>
           </div>

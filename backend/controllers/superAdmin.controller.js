@@ -307,3 +307,24 @@ exports.deleteBankAdmin = async (req, res) => {
     res.status(500).json({ message: "Failed to delete bank admin" });
   }
 };
+
+exports.deleteDonor = async (req, res) => {
+  try {
+    const donorId = req.params.id;
+
+    const donor = await User.findById(donorId);
+
+    if (!donor || donor.role !== "USER") {
+      return res.status(404).json({ message: "Donor not found" });
+    }
+
+    await User.findByIdAndUpdate(donorId, { is_active: false });
+
+    res.json({ message: "Donor deleted successfully" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to delete donor" });
+  }
+};
+

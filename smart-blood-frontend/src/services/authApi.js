@@ -6,4 +6,4 @@ export const loginUser = (data) =>
 
 // 👤 Get Logged-in User Profile
 export const getMyProfile = () =>
-  api.get("/auth/me");
+  api.get("/profile/me");

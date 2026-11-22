@@ -57,6 +57,7 @@ export const deleteDoctor = (id) => {
   return api.delete(`/super-admin/doctors/${id}`);
 };
 
+
 // ❌ Delete Bank Admin
 export const deleteBankAdmin = (id) => {
   return api.delete(`/super-admin/bank-admins/${id}`);
@@ -70,4 +71,4 @@ export const getDonors = () =>
   api.get("/donors/all");
 
 export const deleteDonor = (id) =>
-  api.delete(`/donors/${id}`);
+  api.delete(`/super-admin/donors/${id}`);
